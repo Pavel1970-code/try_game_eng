@@ -107,7 +107,7 @@ class _GameScreenState extends State<GameScreen> {
       } else {
         _result = normalizedNumber + 1;
         _userInput = normalizedNumber;
-        _message = _winMessages[_random.nextInt(_winMessages.length)];
+        _message = _attempts == 1 ? 'Ups! I won. Try again!' : _winMessages[_random.nextInt(_winMessages.length)];
         _hasResult = true;
         _showInput = false;
       }
@@ -120,11 +120,11 @@ class _GameScreenState extends State<GameScreen> {
   void _triggerFakeWin(int normalizedNumber) {
     setState(() {
       _result = normalizedNumber - 1;
+      _userInput = normalizedNumber;
       _message = 'Wow. You did it.\nYou actually won…';
       _hasResult = true;
       _showInput = false;
       _isFakeWinPhase1 = true;
-      _userInput = null;
     });
 
     _controller.clear();
@@ -135,10 +135,10 @@ class _GameScreenState extends State<GameScreen> {
 
       setState(() {
         _result = normalizedNumber + 1;
+        _userInput = normalizedNumber;
         _message = 'But nope 😛';
         _fakeWinUsed = true;
         _isFakeWinPhase1 = false;
-        _userInput = null;
       });
 
       Future.delayed(const Duration(seconds: 2), () {
@@ -262,6 +262,41 @@ class _GameScreenState extends State<GameScreen> {
             child: Column(
               children: [
                 if (_result != null &&
+                    _userInput != null &&
+                    _isFakeWinPhase1 &&
+                    _result! < _userInput!)
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: Text(
+                      '$_result < $_userInput',
+                      key: ValueKey('$_result-$_userInput-phase1'),
+                      style: TextStyle(
+                        fontSize: 72,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple[800],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                else if (_result != null &&
+                    _userInput != null &&
+                    !_isFakeWinPhase1 &&
+                    _fakeWinUsed &&
+                    _result! > _userInput!)
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: Text(
+                      '$_result > $_userInput 😜',
+                      key: ValueKey('$_result-$_userInput-phase2'),
+                      style: TextStyle(
+                        fontSize: 72,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple[800],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                else if (_result != null &&
                     _userInput != null &&
                     !_isFakeWinPhase1 &&
                     _result != 101)
@@ -458,17 +493,14 @@ class _GameScreenState extends State<GameScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'I made this game in 1986,\n'
-              'during a computer science class.\n\n'
-              'It was written in BASIC.\n\n'
-              'My teacher played it,\n'
-              'laughed,\n'
-              'gave me top grades\n'
-              'and told me not to come back,\n'
-              'so I wouldn\'t occupy the computer.',
+              'This little piece of mischief was made by me, Pavel Gutnik.\n'
+              'If it made you smile, you can buy me a coffee — or just reach out.\n'
+              'I\'m always open to friendship and collaboration.\n'
+              'Life\'s more fun that way.\n'
+              'Peace and good vibes to everyone.',
               style: TextStyle(
-                fontSize: 18,
-                height: 1.6,
+                fontSize: 20,
+                height: 1.4,
                 color: Colors.grey[800],
               ),
               textAlign: TextAlign.center,
