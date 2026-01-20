@@ -45,6 +45,7 @@ class _GameScreenState extends State<GameScreen> {
   int _attempts = 0;
   bool _fakeWinUsed = false;
   bool _hintShown = false;
+  bool _hintAfterFakeWinShown = false;
   bool _showInput = true;
   bool _isFakeWinPhase1 = false;
   int? _userInput;
@@ -130,15 +131,28 @@ class _GameScreenState extends State<GameScreen> {
     _focusNode.unfocus();
 
     Future.delayed(const Duration(seconds: 5), () {
-      if (mounted) {
+      if (!mounted) return;
+
+      setState(() {
+        _result = normalizedNumber + 1;
+        _message = 'But nope 😛';
+        _fakeWinUsed = true;
+        _isFakeWinPhase1 = false;
+        _userInput = null;
+      });
+
+      Future.delayed(const Duration(seconds: 2), () {
+        if (!mounted || _gameFinished || _hintAfterFakeWinShown) return;
+
         setState(() {
-          _result = normalizedNumber + 1;
-          _message = 'But nope 😛';
-          _fakeWinUsed = true;
-          _isFakeWinPhase1 = false;
+          _message = 'Try 100.';
+          _hasResult = true;
+          _showInput = true;
+          _result = null;
           _userInput = null;
+          _hintAfterFakeWinShown = true;
         });
-      }
+      });
     });
   }
 
