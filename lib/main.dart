@@ -107,7 +107,9 @@ class _GameScreenState extends State<GameScreen> {
       } else {
         _result = normalizedNumber + 1;
         _userInput = normalizedNumber;
-        _message = _attempts == 1 ? 'Ups! I won. Try again!' : _winMessages[_random.nextInt(_winMessages.length)];
+        _message = _attempts == 1
+            ? 'Ups! I won. Try again!'
+            : _winMessages[_random.nextInt(_winMessages.length)];
         _hasResult = true;
         _showInput = false;
       }
